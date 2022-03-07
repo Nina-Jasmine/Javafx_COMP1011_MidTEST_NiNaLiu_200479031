@@ -65,7 +65,7 @@ public class StudentViewController implements Initializable {
         provinceCol.setCellValueFactory(new PropertyValueFactory<>("Province"));
         avgGradeCol.setCellValueFactory(new PropertyValueFactory<>("Avg Grade"));
         majorCol.setCellValueFactory(new PropertyValueFactory<>("Major"));
-
+        tableView.getItems().clear();
         tableView.getItems().addAll(DBUtility.getStudentFromDB());
 
         //areaCodeComboBox.getItems().add("All");

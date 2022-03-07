@@ -4,6 +4,8 @@ package com.example.w22comp1011gctest1;
 import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.Collection;
+ import java.sql.DriverManager;
+
 
 public class DBUtility {
     private static String user = "NiNa200479031";
@@ -37,7 +39,6 @@ public class DBUtility {
 
 
                 Student newStudent = new Student(studentNum, firstName, lastName, telephone, address, province, avgGrade, major);
-
 
                 students.add(newStudent);
 
