@@ -3,6 +3,7 @@ package com.example.w22comp1011gctest1;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -54,6 +55,19 @@ public class StudentViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        areaCodeComboBox.getItems().add("All");
+
+        studentNumCol.setCellValueFactory(new PropertyValueFactory<>("Student#"));
+        firstNameCol.setCellValueFactory(new PropertyValueFactory<>("First Name"));
+        lastNameCol.setCellValueFactory(new PropertyValueFactory<>("Last Name"));
+        telephoneCol.setCellValueFactory(new PropertyValueFactory<>("Telephone"));
+        addressCol.setCellValueFactory(new PropertyValueFactory<>("Address"));
+
+        provinceCol.setCellValueFactory(new PropertyValueFactory<>("Province"));
+        avgGradeCol.setCellValueFactory(new PropertyValueFactory<>("Avg Grade"));
+        majorCol.setCellValueFactory(new PropertyValueFactory<>("Major"));
+
+        tableView.getItems().addAll(DBUtility.getStudentFromDB());
+
+        //areaCodeComboBox.getItems().add("All");
     }
 }

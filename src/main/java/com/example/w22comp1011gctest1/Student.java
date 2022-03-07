@@ -6,19 +6,23 @@ public class Student {
     private String firstName;
     private String lastName;
     private String telephone;
+    private String address;
     private ProvinceList province;
     private int avgGrade;
     private String major;
 
-    public Student(int studentNum, String firstName, String lastName, String telephone, ProvinceList province, int avgGrade, String major) {
+    public Student(int studentNum, String firstName, String lastName, String telephone,  String address, ProvinceList province, int avgGrade, String major) {
         setStudentNum(studentNum);
         setFirstName(firstName);
         setLastName(lastName);
         setTelephone(telephone);
+        setAddress(address);
         setProvince(province);
         setAvgGrade (avgGrade);
         setMajor(major);
     }
+
+
 
     public int getStudentNum() {
         return studentNum;
@@ -63,6 +67,17 @@ public class Student {
         this.telephone = telephone;
         else
             System.out.println("c.\tTelephone number should match the North American dialing plan");
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        if(address.length()>6)
+        this.address = address;
+        else
+            System.out.println("Address must be more than 6 characters");
     }
 
     public ProvinceList getProvince() {
