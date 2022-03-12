@@ -56,7 +56,7 @@ public class StudentViewController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        //Question 2a: populate the tableview, instantiate 1000 Student objects based on a query to the database
          studentNumCol.setCellValueFactory(new PropertyValueFactory<>("studentNum"));
         firstNameCol.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         lastNameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
@@ -69,15 +69,18 @@ public class StudentViewController implements Initializable {
         tableView.getItems().clear();
         tableView.getItems().addAll(DBUtility.getStudentFromDB());
 
+        //Question 2b: populate the ComboBox with a sorted list of distinct area codes from the student’s telephone numbers
         areaCodeComboBox.getItems().addAll(DBUtility.getAreaCodeFromDB());
 
-        numOfStudentsLabel.setText("Number of Students: " + getNumOfStudent() );
+        //Question 2c: The numOfStudentsLabel should indicate how many students are in the table
+        //numOfStudentsLabel.setText("Number of Students: " + getNumOfStudent() );
+        numOfStudentsLabel.setText("Number of Students: " + tableView.getItems().size() );
 
         areaCodeComboBox.getSelectionModel().getSelectedItem();
         
          
     }
-    
+    /*
     public static int getNumOfStudent(){
         int numOfStudent = 0;
 
@@ -87,5 +90,5 @@ public class StudentViewController implements Initializable {
 
         return numOfStudent;
         
-    }
+    }*/
 }
