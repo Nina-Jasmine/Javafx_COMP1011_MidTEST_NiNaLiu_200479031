@@ -29,7 +29,7 @@ public class Student {
     }
 
     public void setStudentNum(int studentNum) {
-        if(studentNum > 200034000)
+        if(studentNum >= 200034000)
         this.studentNum = studentNum;
         else
             System.out.println("student number should be greater than 200034000");

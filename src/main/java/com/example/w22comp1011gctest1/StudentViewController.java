@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class StudentViewController implements Initializable {
@@ -56,18 +57,35 @@ public class StudentViewController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        studentNumCol.setCellValueFactory(new PropertyValueFactory<>("Student#"));
-        firstNameCol.setCellValueFactory(new PropertyValueFactory<>("First Name"));
-        lastNameCol.setCellValueFactory(new PropertyValueFactory<>("Last Name"));
-        telephoneCol.setCellValueFactory(new PropertyValueFactory<>("Telephone"));
-        addressCol.setCellValueFactory(new PropertyValueFactory<>("Address"));
+         studentNumCol.setCellValueFactory(new PropertyValueFactory<>("studentNum"));
+        firstNameCol.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        lastNameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        telephoneCol.setCellValueFactory(new PropertyValueFactory<>("telephone"));
+        addressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
 
-        provinceCol.setCellValueFactory(new PropertyValueFactory<>("Province"));
-        avgGradeCol.setCellValueFactory(new PropertyValueFactory<>("Avg Grade"));
-        majorCol.setCellValueFactory(new PropertyValueFactory<>("Major"));
+        provinceCol.setCellValueFactory(new PropertyValueFactory<>("province"));
+        avgGradeCol.setCellValueFactory(new PropertyValueFactory<>("avgGrade"));
+        majorCol.setCellValueFactory(new PropertyValueFactory<>("major"));
         tableView.getItems().clear();
         tableView.getItems().addAll(DBUtility.getStudentFromDB());
 
-        //areaCodeComboBox.getItems().add("All");
+        areaCodeComboBox.getItems().addAll(DBUtility.getAreaCodeFromDB());
+
+        numOfStudentsLabel.setText("Number of Students: " + getNumOfStudent() );
+
+        areaCodeComboBox.getSelectionModel().getSelectedItem();
+        
+         
+    }
+    
+    public static int getNumOfStudent(){
+        int numOfStudent = 0;
+
+        for(Student s : DBUtility.getStudentFromDB()){
+            numOfStudent++;
+        }
+
+        return numOfStudent;
+        
     }
 }

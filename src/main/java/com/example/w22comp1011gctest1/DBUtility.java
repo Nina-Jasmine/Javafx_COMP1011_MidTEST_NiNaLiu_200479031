@@ -1,7 +1,7 @@
 package com.example.w22comp1011gctest1;
 
  import java.sql.*;
-import java.sql.DatabaseMetaData;
+
 import java.util.ArrayList;
 import java.util.Collection;
  import java.sql.DriverManager;
@@ -15,7 +15,8 @@ public class DBUtility {
     public static ArrayList<Student> getStudentFromDB() {
         ArrayList<Student> students = new ArrayList<>();
 
-        //query the DB and create CO2Emission objects / add them to the list
+
+        //query the DB and create objects / add them to the list
 
         String sql = "select studentNum, firstName, lastName, homeAddress, province, telephone, avgGrade, major \n" +
                 "from students;";
@@ -28,18 +29,17 @@ public class DBUtility {
         ) {
 
             while (resultSet.next()) {
-                int studentNum = resultSet.getInt("Student#");
-                String firstName = resultSet.getString("First Name");
-                String lastName = resultSet.getString("Last Name");
-                String telephone = resultSet.getString("Telephone");
-                String address = resultSet.getString("Address");
-                ProvinceList province = ProvinceList.valueOf(resultSet.getString("Province"));
-                int avgGrade = resultSet.getInt("Avg Grade");
-                String major = resultSet.getString("Major");
+                int studentNum = resultSet.getInt("studentNum");
+                String firstName = resultSet.getString("FirstName");
+                String lastName = resultSet.getString("lastName");
+                String telephone = resultSet.getString("telephone");
+                String address = resultSet.getString("homeAddress");
+                ProvinceList province = ProvinceList.valueOf(resultSet.getString("province"));
+                int avgGrade = resultSet.getInt("avgGrade");
+                String major = resultSet.getString("major");
 
 
                 Student newStudent = new Student(studentNum, firstName, lastName, telephone, address, province, avgGrade, major);
-
                 students.add(newStudent);
 
             }
@@ -47,5 +47,34 @@ public class DBUtility {
             e.printStackTrace();
         }
         return students;
+    }
+
+    public static ArrayList<String> getAreaCodeFromDB() {
+        ArrayList<String> areaCodes = new ArrayList<>();
+
+
+        //query the DB and get telephone
+
+        String sql = "select distinct left(telephone, 3) as areaCode\n" +
+                "from students;";
+
+
+        try (
+                Connection conn = DriverManager.getConnection(connectURL, user, password);
+                Statement statement = conn.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql);
+        ) {
+
+            while (resultSet.next()) {
+
+                String areaCode = resultSet.getString("areaCode");
+
+                areaCodes.add(areaCode);
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return areaCodes;
     }
 }
