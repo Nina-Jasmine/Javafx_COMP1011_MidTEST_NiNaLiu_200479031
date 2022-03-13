@@ -1,5 +1,10 @@
 package com.example.w22comp1011gctest1;
 
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -52,13 +57,54 @@ public class StudentViewController implements Initializable {
 
     @FXML
     private void applyFilter()  {
+
+        // 1. Wrap the ObservableList in a FilteredList (initially display all data).
+
+        /*cast ArrayList to observableArrayList
+        ObservableList<Student> masterData = FXCollections.observableArrayList();
+        for (Student student : DBUtility.getStudentFromDB()) {
+            masterData.add(student);
+        }*/
+
+        ObservableList<Student> backingList = tableView.getItems();
+        FilteredList<Student> filteredData = new FilteredList<>(backingList, s -> true);
+
+        // 2. Set the filter Predicate whenever the filter changes.
+        ontarioCheckBox.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) -> {
+            filteredData.setPredicate(student -> {
+                // If not selected, display all students.
+                if (!newValue) {
+                    return true;
+                }else {
+
+                    if (student.getProvince().toString().equals("ON")) {
+                        return true; // Filter matches 'ON'.
+                    } else
+                    return false; // Does not match.
+                     }
+                });
+        });
+
+        // 3. Wrap the FilteredList in a SortedList.
+        SortedList<Student> sortedData = new SortedList<>(filteredData);
+
+        // 4. Bind the SortedList comparator to the TableView comparator.
+        sortedData.comparatorProperty().bind(tableView.comparatorProperty());
+
+        // 5. Add sorted (and filtered) data to the table.
+         //tableView.getItems().clear();
+        tableView.setItems(sortedData);
+        numOfStudentsLabel.setText("Number of Students: " + tableView.getItems().size() );
     }
+
+
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //Question 2a: populate the tableview, instantiate 1000 Student objects based on a query to the database
-         studentNumCol.setCellValueFactory(new PropertyValueFactory<>("studentNum"));
-        firstNameCol.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        studentNumCol.setCellValueFactory(new PropertyValueFactory<>("studentNum"));
+        firstNameCol.setCellValueFactory(new PropertyValueFactory<>("FirstName"));
         lastNameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         telephoneCol.setCellValueFactory(new PropertyValueFactory<>("telephone"));
         addressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
@@ -77,6 +123,10 @@ public class StudentViewController implements Initializable {
         numOfStudentsLabel.setText("Number of Students: " + tableView.getItems().size() );
 
         areaCodeComboBox.getSelectionModel().getSelectedItem();
+
+       // applyFilter();
+
+
         
          
     }
