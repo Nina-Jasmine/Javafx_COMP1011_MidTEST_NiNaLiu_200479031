@@ -70,7 +70,7 @@ public class StudentViewController implements Initializable {
             masterData.add(student);
         }*/
 
-        ObservableList<Student> backingList = this.tableView.getItems();
+        ObservableList<Student> backingList =  tableView.getItems();
         FilteredList<Student> filteredData = new FilteredList<>(backingList, s -> true);
 
         // 2d. Set the filter Predicate whenever the filter changes.
@@ -81,8 +81,15 @@ public class StudentViewController implements Initializable {
                     return true;
                 }else {
 
-                    if (student.getProvince().toString().equals("ON")) {
-                        return true; // Filter matches 'ON'.
+                    if (student.getProvince().toString().equals("ON") ) {
+                        if (honourRollCheckBox.isSelected()) {
+                            if (student.getAvgGrade() >=80) {
+                                return true; // Filter matches 'ON'.
+                            } else
+                                return false; // Does not match.
+                        } else{
+                            return true; // Filter matches 'ON'.
+                    }
                     } else
                     return false; // Does not match.
                      }
@@ -99,14 +106,27 @@ public class StudentViewController implements Initializable {
                 }else {
 
                     if (student.getAvgGrade() >=80) {
+
                         return true; // Filter matches 'ON'.
                     } else
-                        return false; // Does not match.
+                       return false; // Does not match.
                 }
             });
         });
 
-
+        //Question 2f areaCodeComboBox
+        areaCodeComboBox .valueProperty().addListener((Observable, oldValue, newValue) -> {
+            filteredData.setPredicate(student -> {
+                // If not selected, display all students.
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                if (student.getTelephone().substring(0, 3).equals(newValue)) {
+                    return true;
+                } else
+                    return false; // Does not match.
+            });
+        });
 
         // 3. Wrap the FilteredList in a SortedList.
         SortedList<Student> sortedData = new SortedList<>(filteredData);
@@ -117,7 +137,7 @@ public class StudentViewController implements Initializable {
         // 5. Add sorted (and filtered) data to the table.
          //tableView.getItems().clear();
         tableView.setItems(sortedData);
-        numOfStudentsLabel.setText("Number of Students: " + tableView.getItems().size() );
+        numOfStudentsLabel.setText("Number of Students: " + this.tableView.getItems().size() + " and " + sortedData.size());
     }
 
 
