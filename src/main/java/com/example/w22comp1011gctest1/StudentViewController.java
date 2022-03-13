@@ -55,6 +55,10 @@ public class StudentViewController implements Initializable {
     @FXML
     private ComboBox<String> areaCodeComboBox;
 
+    private void addListener(CheckBox checkBox){
+
+    }
+
     @FXML
     private void applyFilter()  {
 
@@ -66,10 +70,10 @@ public class StudentViewController implements Initializable {
             masterData.add(student);
         }*/
 
-        ObservableList<Student> backingList = tableView.getItems();
+        ObservableList<Student> backingList = this.tableView.getItems();
         FilteredList<Student> filteredData = new FilteredList<>(backingList, s -> true);
 
-        // 2. Set the filter Predicate whenever the filter changes.
+        // 2d. Set the filter Predicate whenever the filter changes.
         ontarioCheckBox.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) -> {
             filteredData.setPredicate(student -> {
                 // If not selected, display all students.
@@ -84,6 +88,25 @@ public class StudentViewController implements Initializable {
                      }
                 });
         });
+
+        //Question 2e honourRollCheckBox
+
+        honourRollCheckBox .selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) -> {
+            filteredData.setPredicate(student -> {
+                // If not selected, display all students.
+                if (!newValue) {
+                    return true;
+                }else {
+
+                    if (student.getAvgGrade() >=80) {
+                        return true; // Filter matches 'ON'.
+                    } else
+                        return false; // Does not match.
+                }
+            });
+        });
+
+
 
         // 3. Wrap the FilteredList in a SortedList.
         SortedList<Student> sortedData = new SortedList<>(filteredData);
@@ -124,7 +147,7 @@ public class StudentViewController implements Initializable {
 
         areaCodeComboBox.getSelectionModel().getSelectedItem();
 
-       // applyFilter();
+         applyFilter();
 
 
         
