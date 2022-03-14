@@ -64,34 +64,36 @@ public class StudentViewController implements Initializable {
 
         // 1. Wrap the ObservableList in a FilteredList (initially display all data).
 
-        /*cast ArrayList to observableArrayList
-        ObservableList<Student> masterData = FXCollections.observableArrayList();
-        for (Student student : DBUtility.getStudentFromDB()) {
-            masterData.add(student);
+        //cast ArrayList to observableArrayList
+        // ObservableList<Student> backingList = FXCollections.observableArrayList();
+        /*for (Student student : DBUtility.getStudentFromDB()) {
+            backingList.add(student);
         }*/
+        // backingList.addAll(DBUtility.getStudentFromDB());
 
-        ObservableList<Student> backingList =  tableView.getItems();
+       // tableView.getItems().addAll(DBUtility.getStudentFromDB());
+
+       ObservableList<Student> backingList =  tableView.getItems();
         FilteredList<Student> filteredData = new FilteredList<>(backingList, s -> true);
+      /*  FilteredList<Student> filteredData = new FilteredList<>(new SortedList<>(backingList));
+        SortedList<Student> sortedData = new SortedList<>(filteredData);
+        filteredData.setPredicate(s -> true);*/
 
         // 2d. Set the filter Predicate whenever the filter changes.
         ontarioCheckBox.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) -> {
             filteredData.setPredicate(student -> {
                 // If not selected, display all students.
-                if (!newValue) {
+                if (!ontarioCheckBox.isSelected()) {
                     return true;
                 }else {
 
-                    if (student.getProvince().toString().equals("ON") ) {
-                        if (honourRollCheckBox.isSelected()) {
-                            if (student.getAvgGrade() >=80) {
-                                return true; // Filter matches 'ON'.
-                            } else
-                                return false; // Does not match.
-                        } else{
+                    if (student.getProvince().toString().equals("ON") && (!honourRollCheckBox.isSelected() || (student.getAvgGrade() >=80))
+                            && (areaCodeComboBox.getSelectionModel().isEmpty() || (student.getTelephone().substring(0, 3).equals(areaCodeComboBox.getSelectionModel().getSelectedItem()))
+                    )) {
+
                             return true; // Filter matches 'ON'.
-                    }
                     } else
-                    return false; // Does not match.
+                            return false; // Does not match.
                      }
                 });
         });
@@ -101,11 +103,13 @@ public class StudentViewController implements Initializable {
         honourRollCheckBox .selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) -> {
             filteredData.setPredicate(student -> {
                 // If not selected, display all students.
-                if (!newValue) {
+                if (!honourRollCheckBox.isSelected()) {
                     return true;
                 }else {
 
-                    if (student.getAvgGrade() >=80) {
+                    if (student.getAvgGrade() >=80 && (!ontarioCheckBox.isSelected() || (student.getProvince().toString().equals("ON")))
+                            && ((areaCodeComboBox.getSelectionModel().isEmpty()) || (student.getTelephone().substring(0, 3).equals(areaCodeComboBox.getSelectionModel().getSelectedItem()))
+                    )){
 
                         return true; // Filter matches 'ON'.
                     } else
@@ -115,13 +119,16 @@ public class StudentViewController implements Initializable {
         });
 
         //Question 2f areaCodeComboBox
-        areaCodeComboBox .valueProperty().addListener((Observable, oldValue, newValue) -> {
+        areaCodeComboBox.valueProperty().addListener((Observable, oldValue, newValue) -> {
             filteredData.setPredicate(student -> {
                 // If not selected, display all students.
-                if (newValue == null || newValue.isEmpty()) {
+                if (areaCodeComboBox.getSelectionModel().isEmpty()) {
                     return true;
                 }
-                if (student.getTelephone().substring(0, 3).equals(newValue)) {
+                if (student.getTelephone().substring(0, 3).equals(areaCodeComboBox.getSelectionModel().getSelectedItem())
+                        && (!ontarioCheckBox.isSelected() || (student.getProvince().toString().equals("ON")))
+                        && (!honourRollCheckBox.isSelected() || (student.getAvgGrade() >=80))
+                ) {
                     return true;
                 } else
                     return false; // Does not match.
@@ -129,15 +136,16 @@ public class StudentViewController implements Initializable {
         });
 
         // 3. Wrap the FilteredList in a SortedList.
-        SortedList<Student> sortedData = new SortedList<>(filteredData);
+         SortedList<Student> sortedData = new SortedList<>(filteredData);
 
         // 4. Bind the SortedList comparator to the TableView comparator.
         sortedData.comparatorProperty().bind(tableView.comparatorProperty());
 
         // 5. Add sorted (and filtered) data to the table.
-         //tableView.getItems().clear();
-        tableView.setItems(sortedData);
-        numOfStudentsLabel.setText("Number of Students: " + this.tableView.getItems().size() + " and " + sortedData.size());
+
+        //this.tableView.getItems().clear();
+         tableView.setItems(sortedData);
+        numOfStudentsLabel.setText("Number of Students: " +  sortedData.size());
     }
 
 
