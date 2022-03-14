@@ -55,9 +55,6 @@ public class StudentViewController implements Initializable {
     @FXML
     private ComboBox<String> areaCodeComboBox;
 
-    private void addListener(CheckBox checkBox){
-
-    }
 
     @FXML
     private void applyFilter()  {
@@ -71,19 +68,20 @@ public class StudentViewController implements Initializable {
         }*/
         // backingList.addAll(DBUtility.getStudentFromDB());
 
-       // tableView.getItems().addAll(DBUtility.getStudentFromDB());
+
 
        ObservableList<Student> backingList =  tableView.getItems();
         FilteredList<Student> filteredData = new FilteredList<>(backingList, s -> true);
-      /*  FilteredList<Student> filteredData = new FilteredList<>(new SortedList<>(backingList));
-        SortedList<Student> sortedData = new SortedList<>(filteredData);
-        filteredData.setPredicate(s -> true);*/
+
 
         // 2d. Set the filter Predicate whenever the filter changes.
         ontarioCheckBox.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) -> {
             filteredData.setPredicate(student -> {
-                // If not selected, display all students.
-                if (!ontarioCheckBox.isSelected()) {
+                //  if newValue is  unchecked, check the other 2 filters.
+
+                if (!newValue && (!honourRollCheckBox.isSelected() || (student.getAvgGrade() >=80))
+                        && (areaCodeComboBox.getSelectionModel().isEmpty() || (student.getTelephone().substring(0, 3).equals(areaCodeComboBox.getSelectionModel().getSelectedItem()))
+                )) {
                     return true;
                 }else {
 
@@ -102,8 +100,10 @@ public class StudentViewController implements Initializable {
 
         honourRollCheckBox .selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) -> {
             filteredData.setPredicate(student -> {
-                // If not selected, display all students.
-                if (!honourRollCheckBox.isSelected()) {
+                // If not selected, check the other 2 filters.
+                if (!newValue  && (!honourRollCheckBox.isSelected() || (student.getAvgGrade() >=80))
+                        && (areaCodeComboBox.getSelectionModel().isEmpty() || (student.getTelephone().substring(0, 3).equals(areaCodeComboBox.getSelectionModel().getSelectedItem()))
+                )) {
                     return true;
                 }else {
 
