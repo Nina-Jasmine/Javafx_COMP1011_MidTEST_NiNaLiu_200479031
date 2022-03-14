@@ -51,12 +51,12 @@ public class DBUtility {
 
     public static ArrayList<String> getAreaCodeFromDB() {
         ArrayList<String> areaCodes = new ArrayList<>();
-
+        areaCodes.add("All");
 
         //query the DB and get telephone
 
         String sql = "select distinct left(telephone, 3) as areaCode\n" +
-                "from students;";
+                "from students order by areaCode asc;";
 
 
         try (
@@ -75,6 +75,7 @@ public class DBUtility {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return areaCodes;
     }
 }

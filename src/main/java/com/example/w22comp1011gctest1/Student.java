@@ -32,7 +32,7 @@ public class Student {
         if(studentNum >= 200034000)
         this.studentNum = studentNum;
         else
-            System.out.println("student number should be greater than 200034000");
+            throw new IllegalArgumentException("student number should be greater than 200034000");
     }
 
     public String getFirstName() {
@@ -41,10 +41,10 @@ public class Student {
     }
 
     public void setFirstName(String firstName) {
-        if (firstName.length()>1)
+        if (firstName.trim().length()>1)
         this.firstName = firstName;
         else
-            System.out.println(" First name must be more than 1 character");
+            throw new IllegalArgumentException(" First name must be more than 1 character");
     }
 
     public String getLastName() {
@@ -52,10 +52,10 @@ public class Student {
     }
 
     public void setLastName(String lastName) {
-        if (lastName.length()>1)
+        if (lastName.trim().length()>1)
         this.lastName = lastName;
         else
-            System.out.println(" Last name must be more than 1 character");
+            throw new IllegalArgumentException(" Last name must be more than 1 character");
     }
 
     public String getTelephone() {
@@ -63,10 +63,10 @@ public class Student {
     }
 
     public void setTelephone(String telephone) {
-        if (telephone.matches("\\(?[2-9][0-9][0-9]\\)?[-\\s.]?[2-9]\\d{2}[-\\s.]?[0-9]{4}"))
+        if (telephone.matches("\\(?[2-9][0-9][0-9]\\)?[-.\\s]?[2-9]\\d{2}[-\\s.]?[0-9]{4}"))
         this.telephone = telephone;
         else
-            System.out.println("c.\tTelephone number should match the North American dialing plan");
+            throw new IllegalArgumentException("c.\tTelephone number should match the North American dialing plan");
     }
 
     public String getAddress() {
@@ -77,13 +77,13 @@ public class Student {
         if(address.length()>6)
         this.address = address;
         else
-            System.out.println("Address must be more than 6 characters");
+            throw new IllegalArgumentException("Address must be more than 6 characters");
     }
 
     public ProvinceList getProvince() {
         return province;
     }
-
+    //Province can be validated by the enum ProvinceList
     public void setProvince(ProvinceList province) {
         this.province = province;
     }
@@ -96,7 +96,7 @@ public class Student {
         if (avgGrade >=0 && avgGrade <=100)
         this.avgGrade = avgGrade;
         else
-            System.out.println("f.\tAverage grade must be in the range of 0-100 ");
+            throw new IllegalArgumentException("Average grade must be in the range of 0-100 ");
     }
 
     public String getMajor() {
@@ -107,7 +107,7 @@ public class Student {
         if (major.length() > 5)
         this.major = major;
         else
-            System.out.println("Major must be greater than 5 characters");
+            throw new IllegalArgumentException("Major must be greater than 5 characters");
 
     }
 }

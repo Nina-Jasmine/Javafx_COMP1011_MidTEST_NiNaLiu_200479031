@@ -13,6 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.TreeSet;
 
 public class StudentViewController implements Initializable {
 
@@ -55,22 +56,16 @@ public class StudentViewController implements Initializable {
     @FXML
     private ComboBox<String> areaCodeComboBox;
 
+    ArrayList<Student> students = new ArrayList<>(DBUtility.getStudentFromDB());
+
 
     @FXML
     private void applyFilter()  {
 
         // 1. Wrap the ObservableList in a FilteredList (initially display all data).
 
-        //cast ArrayList to observableArrayList
-        // ObservableList<Student> backingList = FXCollections.observableArrayList();
-        /*for (Student student : DBUtility.getStudentFromDB()) {
-            backingList.add(student);
-        }*/
-        // backingList.addAll(DBUtility.getStudentFromDB());
 
-
-
-       ObservableList<Student> backingList =  tableView.getItems();
+         ObservableList<Student> backingList =  tableView.getItems();
         FilteredList<Student> filteredData = new FilteredList<>(backingList, s -> true);
 
 
@@ -79,20 +74,16 @@ public class StudentViewController implements Initializable {
             filteredData.setPredicate(student -> {
                 //  if newValue is  unchecked, check the other 2 filters.
 
-                if (!newValue && (!honourRollCheckBox.isSelected() || (student.getAvgGrade() >=80))
-                        && (areaCodeComboBox.getSelectionModel().isEmpty() || (student.getTelephone().substring(0, 3).equals(areaCodeComboBox.getSelectionModel().getSelectedItem()))
+                if ((!newValue || student.getProvince().toString().equals("ON"))
+                        && (!honourRollCheckBox.isSelected() || (student.getAvgGrade() >=80))
+                        && (areaCodeComboBox.getSelectionModel().isEmpty()
+                        ||  areaCodeComboBox.getSelectionModel().getSelectedItem().equals("All")
+                        ||  student.getTelephone().substring(0, 3).equals(areaCodeComboBox.getSelectionModel().getSelectedItem())
                 )) {
-                    return true;
-                }else {
-
-                    if (student.getProvince().toString().equals("ON") && (!honourRollCheckBox.isSelected() || (student.getAvgGrade() >=80))
-                            && (areaCodeComboBox.getSelectionModel().isEmpty() || (student.getTelephone().substring(0, 3).equals(areaCodeComboBox.getSelectionModel().getSelectedItem()))
-                    )) {
-
-                            return true; // Filter matches 'ON'.
+                            return true; // Filter matches
                     } else
                             return false; // Does not match.
-                     }
+
                 });
         });
 
@@ -101,20 +92,15 @@ public class StudentViewController implements Initializable {
         honourRollCheckBox .selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) -> {
             filteredData.setPredicate(student -> {
                 // If not selected, check the other 2 filters.
-                if (!newValue  && (!honourRollCheckBox.isSelected() || (student.getAvgGrade() >=80))
-                        && (areaCodeComboBox.getSelectionModel().isEmpty() || (student.getTelephone().substring(0, 3).equals(areaCodeComboBox.getSelectionModel().getSelectedItem()))
-                )) {
-                    return true;
-                }else {
-
-                    if (student.getAvgGrade() >=80 && (!ontarioCheckBox.isSelected() || (student.getProvince().toString().equals("ON")))
-                            && ((areaCodeComboBox.getSelectionModel().isEmpty()) || (student.getTelephone().substring(0, 3).equals(areaCodeComboBox.getSelectionModel().getSelectedItem()))
-                    )){
-
-                        return true; // Filter matches 'ON'.
+                if ((!newValue || student.getAvgGrade() >=80)
+                        && (!honourRollCheckBox.isSelected() || (student.getAvgGrade() >=80))
+                        && (areaCodeComboBox.getSelectionModel().isEmpty()
+                        || areaCodeComboBox.getSelectionModel().getSelectedItem().equals("All")
+                        || student.getTelephone().substring(0, 3).equals(areaCodeComboBox.getSelectionModel().getSelectedItem()))
+                )  {
+                        return true; // Filter matches
                     } else
                        return false; // Does not match.
-                }
             });
         });
 
@@ -122,16 +108,15 @@ public class StudentViewController implements Initializable {
         areaCodeComboBox.valueProperty().addListener((Observable, oldValue, newValue) -> {
             filteredData.setPredicate(student -> {
                 // If not selected, display all students.
-                if (areaCodeComboBox.getSelectionModel().isEmpty()) {
-                    return true;
-                }
-                if (student.getTelephone().substring(0, 3).equals(areaCodeComboBox.getSelectionModel().getSelectedItem())
-                        && (!ontarioCheckBox.isSelected() || (student.getProvince().toString().equals("ON")))
+                if ((areaCodeComboBox.getSelectionModel().isEmpty()
+                        || areaCodeComboBox.getSelectionModel().getSelectedItem().equals("All")
+                        || areaCodeComboBox.getSelectionModel().getSelectedItem().equals(student.getTelephone().substring(0, 3)))
+                       &&( !ontarioCheckBox.isSelected() || student.getProvince().toString().equals("ON"))
                         && (!honourRollCheckBox.isSelected() || (student.getAvgGrade() >=80))
-                ) {
+                )  {
                     return true;
                 } else
-                    return false; // Does not match.
+                    return false;
             });
         });
 
@@ -142,10 +127,12 @@ public class StudentViewController implements Initializable {
         sortedData.comparatorProperty().bind(tableView.comparatorProperty());
 
         // 5. Add sorted (and filtered) data to the table.
+         //tableView.getItems().clear();
+          tableView.setItems(sortedData);
 
-        //this.tableView.getItems().clear();
-         tableView.setItems(sortedData);
-        numOfStudentsLabel.setText("Number of Students: " +  sortedData.size());
+
+         // tableView.getItems().addAll(sortedData);
+        numOfStudentsLabel.setText("Number of Students: " +  tableView.getItems().size());
     }
 
 
@@ -164,32 +151,31 @@ public class StudentViewController implements Initializable {
         avgGradeCol.setCellValueFactory(new PropertyValueFactory<>("avgGrade"));
         majorCol.setCellValueFactory(new PropertyValueFactory<>("major"));
         tableView.getItems().clear();
-        tableView.getItems().addAll(DBUtility.getStudentFromDB());
+        tableView.getItems().addAll(students);
 
         //Question 2b: populate the ComboBox with a sorted list of distinct area codes from the student’s telephone numbers
         areaCodeComboBox.getItems().addAll(DBUtility.getAreaCodeFromDB());
+        //areaCodeComboBox.getItems().addAll(getAreaCodes());
 
         //Question 2c: The numOfStudentsLabel should indicate how many students are in the table
-        //numOfStudentsLabel.setText("Number of Students: " + getNumOfStudent() );
+
         numOfStudentsLabel.setText("Number of Students: " + tableView.getItems().size() );
 
         areaCodeComboBox.getSelectionModel().getSelectedItem();
 
          applyFilter();
-
-
-        
          
     }
-    /*
-    public static int getNumOfStudent(){
-        int numOfStudent = 0;
 
-        for(Student s : DBUtility.getStudentFromDB()){
-            numOfStudent++;
+    private TreeSet<String> getAreaCodes(){
+        TreeSet areaCodes = new TreeSet();
+        areaCodes.add("All");
+
+        for(Student student : students){
+            areaCodes.add(student.getTelephone().substring(0,3));
         }
 
-        return numOfStudent;
+        return areaCodes;
         
-    }*/
+    }
 }
